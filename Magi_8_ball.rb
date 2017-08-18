@@ -1,4 +1,4 @@
-require './Magi_8_BallBossMode.rb'
+
 require 'pry'
 
 anwser = [
@@ -46,6 +46,16 @@ default_anwsers = [
 	'● Very doubtful',
 ]
 
+def numbercheck(number)
+  number.to_s
+  begin
+		number = Float(number)
+	rescue
+		@numbers = false
+	end
+end
+
+
 def uniq?(new_response, anwser)
 	anwser << "● #{new_response}"
 	anwser.length == anwser.uniq.length
@@ -64,7 +74,7 @@ end
 
 def menu(anwser, default_anwsers)
 	p 'Enter Question'
-	question = gets.strip
+	question = STDIN.gets.strip
 	cheats(question, anwser, default_anwsers)
 end
 
@@ -80,24 +90,33 @@ end
 def cheats(question, anwser, default_anwsers)
 	if question.downcase.to_s == 'add_anwsers'
 		p 'Enter new response'
-		new_response = gets.strip
+		new_response = STDIN.gets.strip
 		checks_add(new_response, anwser)
 		menu(anwser, default_anwsers)
 	elsif question.downcase.to_s == 'remove_anwsers'
+		p '----Current Resonses----'
 		anwser.each.with_index do |responses, num|
 		num = num + 1
 		puts "#{num}) #{responses}" end
-		p 'Select number of option you wish to remove'
-		remove_response = gets.strip.to_i
-		remove_response = remove_response - 1
-		p "Removing #{anwser.delete_at(remove_response)}"
-		anwser.delete_at(remove_response)
-		menu(anwser, default_anwsers)
+		p 'Select number of the option you wish to remove'
+		p 'Type Return to return to the menu'
+		remove_response = STDIN.gets.strip
+		numbercheck(remove_response)
+		if @numbers == false
+			menu(anwser, default_anwsers)
+		else
+			remove_response.to_i
+			remove_response = remove_response - 1
+			p "Removing #{anwser.delete_at(remove_response)}"
+			anwser.delete_at(remove_response)
+			menu(anwser, default_anwsers)
+		end
 	elsif question.downcase.to_s == 'reset_anwsers'
 		p 'Resetting to Default'
 		anwser = default_anwsers
 		menu(anwser, default_anwsers)
 	elsif question.downcase.to_s == 'print_anwsers'
+		p '----Current Resonses----'
 		anwser.each.with_index do |responses, num|
 		num = num + 1
 		puts "#{num}) #{responses}" end
@@ -108,51 +127,66 @@ def cheats(question, anwser, default_anwsers)
 end
 
 
-def bossmode(anwser, default_anwsers, cheat_codes)    
-	if cheat_codes.empty? == false
-		first = cheat_codes.shift
-		first.strip
-		p "#{first}"
-	else
+def bossmode(anwser, default_anwsers, cheat_codes)
+	if !cheat_codes.first.nil? && cheat_codes == ['boss_mode'] 
+		 bossmode_menu(anwser, default_anwsers)
+	else 
 		menu(anwser, default_anwsers)
 	end
-	if first == 'boss_mode'
+	# if cheat_codes.empty? == false
+	# 	first = cheat_codes.shift
+	# 	first.strip
+	# 	p "#{first}"
+	# else
+	# 	menu(anwser, default_anwsers)
+	# end
+	# if first == 'boss_mode'
 	
-		bossmode_menu(anwser, default_anwsers)
-	else
-		menu(anwser, default_anwsers)
+	# 	bossmode_menu(anwser, default_anwsers)
+	# else
+	# 	menu(anwser, default_anwsers)
 	
-	end
+	# end
 end
 
 
 def bossmode_menu(anwser, default_anwsers)
+	p '----Admin-----'
 	p '1) Add Anwsers'
 	p '2) Remove Anwsers'
 	p '3) Reset Anwsers'
 	p '4) Print Anwsers'
 	p '5) Leave Boss Mode'
-	boss_input = gets.strip.to_i
+	boss_input = STDIN.gets.strip.to_i
 	if boss_input == 1
-			p 'Enter new response'
-		new_response = gets.strip
+		p 'Enter new response'
+		new_response = STDIN.gets.strip
 		checks_add(new_response, anwser)
 		bossmode_menu(anwser, default_anwsers)
 	elsif boss_input == 2
+		p '----Current Resonses----'
 		anwser.each.with_index do |responses, num|
 		num = num + 1
 		puts "#{num}) #{responses}" end
 		p 'Select number of option you wish to remove'
-		remove_response = gets.strip.to_i
-		remove_response = remove_response - 1
-		p "Removing #{anwser.delete_at(remove_response)}"
-		anwser.delete_at(remove_response)
-		menu(anwser, default_anwsers)
+		p 'Type Return to return to the menu'
+		remove_response = STDIN.gets.strip
+		numbercheck(remove_response)
+		if @numbers == false
+			bossmode_menu(anwser, default_anwsers)
+		else
+			remove_response.to_i
+			remove_response = remove_response - 1
+			p "Removing #{anwser.delete_at(remove_response)}"
+			anwser.delete_at(remove_response)
+			bossmode_menu(anwser, default_anwsers)
+		end
 	elsif boss_input == 3
 		p 'Resetting to Default'
 		anwser = default_anwsers
 		bossmode_menu(anwser, default_anwsers)
 	elsif boss_input == 4
+		p '----Current Resonses----'
 		anwser.each.with_index do |responses, num|
 		num = num + 1
 		puts "#{num}) #{responses}" end
@@ -165,9 +199,8 @@ def bossmode_menu(anwser, default_anwsers)
 	end
 end
 
-
-    
-
+   
+@numbers = true 
 cheat_codes = ARGV
 bossmode(anwser, default_anwsers, cheat_codes)
 
